@@ -1,7 +1,9 @@
 const bcrypt = require('bcrypt');
 const { createUser, getUserByEmail } = require('../models/userModel');
+const {userSchema,loginSchema}=require("../validations/AuthenticationValidation")
 
 const signup = async (req, res) => {
+    const validateUser=await userSchema.validate(req.body)
     const { name, email, password, role_id } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -11,8 +13,9 @@ const signup = async (req, res) => {
     });
 };
 
-const login = (req, res) => {
+const login = async (req, res) => {
     const { email, password } = req.body;
+    const validateData=await loginSchema.validate(req.body)
 
     getUserByEmail(email, async (err, users) => {
         if (err) return res.status(500).json({ error: err });
